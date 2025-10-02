@@ -62,20 +62,12 @@ CREATE TABLE bookings (
    ```bash
    mysql -u root -p < schema.sql
    ```
+2. run the project:
+ ```bash
+node server.js
+ ```
 
-3. Run backend (if added later):
-   ```bash
-   cd backend
-   npm install
-   npm start
-   ```
 
-4. Run frontend (if added later):
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
 
 ---
 
