@@ -88,6 +88,4 @@ node server.js
 
 ## 👨‍💻 Author
 **Yashraj Pawar**  
-GitHub: [Yashrajpawar-dev](https://github.com/Yashrajpawar-dev) Linkedin: [Yashraj Pawar](www.linkedin.com/in/
-yashraj-pawar-dev
-)
+GitHub: [Yashrajpawar-dev](https://github.com/Yashrajpawar-dev) Linkedin: [Yashraj Pawar](www.linkedin.com/in/yashraj-pawar-dev)
