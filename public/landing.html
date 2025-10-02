@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome - Smart Parking</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.pexels.com/photos/1756957/pexels-photo-1756957.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.5em;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      background: #ffcc00;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #weather {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="content">
+    <h1>Welcome to Smart Parking</h1>
+    <p>Find your spot with ease </p>
+    <button onclick="location.href='index.html'">Enter App</button>
+    <div id="weather">Loading weather...</div>
+  </div>
+
+  <script>
+    const apiKey = "";//Add your api key
+
+    async function fetchWeather(lat, lon) {
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+        const data = await res.json();
+        document.getElementById("weather").innerText = 
+          `📍 ${data.name} | 🌡️ ${data.main.temp}°C | ${data.weather[0].description}`;
+      } catch (err) {
+        document.getElementById("weather").innerText = "Weather unavailable";
+      }
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          fetchWeather(lat, lon);
+        },
+        error => {
+          document.getElementById("weather").innerText = "Location permission denied";
+        }
+      );
+    } else {
+      document.getElementById("weather").innerText = "Geolocation not supported";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Parking - Payment</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Page</h1>
+    <div id="details"></div>
+
+    <button id="downloadBtn">Download Receipt</button>
+
+    <h2>Scan & Pay</h2>
+    <div class="scanner">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ParkingPayment"
+           alt="QR Code for Payment" />
+    </div>
+  </div>
+
+  <script>
+    const booking = JSON.parse(localStorage.getItem("booking"));
+    const detailsDiv = document.getElementById("details");
+
+    if (booking) {
+      detailsDiv.innerHTML = `
+        <p><strong>Slot:</strong> ${booking.slot_number}</p>
+        <p><strong>Date:</strong> ${booking.date}</p>
+        <p><strong>Time:</strong> ${booking.time}</p>
+        <p><strong>Hours:</strong> ${booking.hours}</p>
+        <p><strong>Amount:</strong> ₹${booking.amount}</p>
+      `;
+    } else {
+      detailsDiv.textContent = "No booking found!";
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      if (!booking) return alert("No booking available to download!");
+
+      const receiptContent = `
+Parking Receipt
+---------------------------
+Booking ID: ${booking.bookingId}
+Slot: ${booking.slot_number}
+Date: ${booking.date}
+Time: ${booking.time}
+Hours: ${booking.hours}
+Amount: ₹${booking.amount}
+      `;
+
+      const blob = new Blob([receiptContent], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Parking_Receipt_${booking.bookingId}.txt`;
+      link.click();
+    });
+  </script>
+</body>
+</html>

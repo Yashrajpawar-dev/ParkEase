@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Parking - Book Slot</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Book Your Parking Slot</h1>
+
+    <form id="bookingForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required />
+
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" required />
+
+      <label for="license">License Plate:</label>
+      <input type="text" id="license" required />
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" required />
+
+      <label for="time">Start Time:</label>
+      <input type="time" id="time" required />
+
+      <label for="hours">Hours:</label>
+      <input type="number" id="hours" min="1" required />
+
+      <button type="button" id="checkSlotsBtn">Check Available Slots</button>
+
+      <div id="slotSelection" style="display:none; margin-top:15px;">
+        <label for="slot">Select Slot:</label>
+        <select id="slot"></select>
+      </div>
+
+      <button type="submit" style="margin-top:15px;">Book Now</button>
+    </form>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    const checkBtn = document.getElementById('checkSlotsBtn');
+    const slotDiv = document.getElementById('slotSelection');
+    const slotSelect = document.getElementById('slot');
+    const form = document.getElementById('bookingForm');
+    const msg = document.getElementById('message');
+
+    checkBtn.addEventListener('click', async () => {
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      const hours = document.getElementById('hours').value;
+
+      if (!date || !time || !hours) {
+        alert("Please select date, time, and hours first");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/slots?date=${date}&time=${time}&hours=${hours}`);
+        const slots = await res.json();
+
+        if (slots.length === 0) {
+          alert("No slots available for selected time.");
+          slotDiv.style.display = "none";
+          return;
+        }
+
+        slotSelect.innerHTML = "";
+        slots.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.textContent = `Slot ${s.slot_number}`;
+          slotSelect.appendChild(opt);
+        });
+
+        slotDiv.style.display = "block";
+      } catch (err) {
+        console.error(err);
+        alert("Error fetching slots");
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const booking = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        license_plate: document.getElementById('license').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        hours: document.getElementById('hours').value,
+        slot_id: document.getElementById('slot').value
+      };
+
+      try {
+        const res = await fetch('/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(booking)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          // Redirect to pay.html with booking info
+          localStorage.setItem("booking", JSON.stringify(data));
+          window.location.href = "pay.html";
+        } else {
+          msg.textContent = data.message || "Booking failed";
+        }
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "Error while booking slot";
+      }
+    });
+  </script>
+</body>
+</html>
